@@ -1,15 +1,11 @@
 """
-=============================================================================
-recurrencia_lineal.py
-=============================================================================
-Descripción:
-    Dado una recurrencia lineal homogénea de coeficientes constantes de grado m:
+Dado una recurrencia lineal homogénea de coeficientes constantes de grado m:
 
-        f(n) = a1*f(n-1) + a2*f(n-2) + ... + am*f(n-m)
+    f(n) = a1*f(n-1) + a2*f(n-2) + ... + am*f(n-m)
 
-    con condiciones iniciales f(0)=C0, f(1)=C1, ..., f(m-1)=Cm-1,
-    este programa encuentra la expresión cerrada (no recurrente) para f(n)
-    y la evalúa en un punto n dado por el usuario.
+con condiciones iniciales f(0)=C0, f(1)=C1, ..., f(m-1)=Cm-1,
+este programa encuentra la expresión cerrada (no recurrente) para f(n)
+y la evalúa en un punto n dado por el usuario.
 
 Método:
     1. Se construye el polinomio característico: r^m - a1*r^(m-1) - ... - am = 0
@@ -22,7 +18,6 @@ Método:
 Dependencias:
     - numpy  (raíces del polinomio y sistema lineal)
     - sympy  (manipulación simbólica para expresión cerrada)
-=============================================================================
 """
 
 import numpy as np
@@ -42,7 +37,7 @@ def leer_entero(mensaje):
         try:
             return int(input(mensaje))
         except ValueError:
-            print("  ✗ Error: ingrese un número entero válido.\n")
+            print("ingrese un número entero válido.\n")
 
 
 def leer_numero(mensaje):
@@ -54,7 +49,7 @@ def leer_numero(mensaje):
         try:
             return float(input(mensaje))
         except ValueError:
-            print("  ✗ Error: ingrese un número válido (puede ser decimal).\n")
+            print("ingrese un número válido (puede ser decimal).\n")
 
 
 def obtener_raices_con_multiplicidad(coefs_poly, tol=1e-6):
@@ -195,22 +190,15 @@ def evaluar_fn(raices_mult, coefs_solucion, n_val):
 # ─────────────────────────────────────────────────────────────
 
 def main():
-    """
-    Función principal: orquesta la lectura de datos, el cálculo de la
-    expresión cerrada y la evaluación de f(n).
-    """
-    print("=" * 60)
     print("  SOLUCIÓN CERRADA DE RECURRENCIA LINEAL HOMOGÉNEA")
-    print("=" * 60)
     print("  f(n) = a1·f(n-1) + a2·f(n-2) + ... + am·f(n-m)")
-    print("=" * 60)
 
     # ── 1. Leer grado m ──────────────────────────────────────
     while True:
         m = leer_entero("\nIngrese el grado m de la recurrencia: ")
         if m >= 1:
             break
-        print("  ✗ m debe ser un entero positivo >= 1.")
+        print("m debe ser un entero positivo >= 1.")
 
     # ── 2. Leer coeficientes a1, a2, ..., am ────────────────
     print(f"\n── Coeficientes de la recurrencia (a1 hasta a{m}) ──")
@@ -231,7 +219,7 @@ def main():
         n_val = leer_entero("\nIngrese el valor de n para evaluar f(n): ")
         if n_val >= 0:
             break
-        print("  ✗ n debe ser un entero no negativo.")
+        print("n debe ser un entero no negativo.")
 
     # ── 5. Caso trivial: n es condición inicial ───────────────
     if n_val < m:
@@ -247,7 +235,7 @@ def main():
     try:
         raices_mult = obtener_raices_con_multiplicidad(coefs_poly)
     except Exception as e:
-        print(f"\n  ✗ Error al calcular raíces: {e}")
+        print(f"\nError al calcular raíces: {e}")
         return
 
     print("\n── Raíces del polinomio característico ──")
@@ -270,7 +258,7 @@ def main():
             raise np.linalg.LinAlgError("La matriz del sistema es singular (det ≈ 0).")
         coefs_solucion = np.linalg.solve(A, b)
     except np.linalg.LinAlgError as e:
-        print(f"\n  ✗ Error al resolver el sistema lineal: {e}")
+        print(f"\nError al resolver el sistema lineal: {e}")
         print("  Verifique que las condiciones iniciales sean consistentes.")
         return
 
@@ -293,11 +281,9 @@ def main():
     print(f"  f({n_val}) = {resultado_iter}  (verificación iterativa)")
 
     if abs(resultado - resultado_iter) < 1e-3:
-        print("  ✓ Ambos métodos coinciden.")
+        print("Ambos métodos coinciden.")
     else:
-        print("  ⚠ Advertencia: discrepancia entre métodos (posible error numérico).")
-
-    print("\n" + "=" * 60)
+        print("posible error numérico.")
 
 
 # ─────────────────────────────────────────────────────────────
