@@ -18,7 +18,7 @@ Solución cerrada de recurrencias lineales homogéneas de coeficientes constante
 ## Uso
 
 ```bash
-python main.py
+Sanguino_Dariana_Sanchez_Maria_Jose_Frias_Adolfo_Entregable1.py
 ```
 
 Sigue las instrucciones en pantalla para ingresar:
