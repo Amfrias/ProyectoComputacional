@@ -193,45 +193,45 @@ def main():
     print("  SOLUCIÓN CERRADA DE RECURRENCIA LINEAL HOMOGÉNEA")
     print("  f(n) = a1·f(n-1) + a2·f(n-2) + ... + am·f(n-m)")
 
-    # ── 1. Leer grado m ──────────────────────────────────────
+    # Leer m 
     while True:
         m = leer_entero("\nIngrese el grado m de la recurrencia: ")
         if m >= 1:
             break
         print("m debe ser un entero positivo >= 1.")
 
-    # ── 2. Leer coeficientes a1, a2, ..., am ────────────────
+    # Leer coeficientes a1, a2, ..., am
     print(f"\n── Coeficientes de la recurrencia (a1 hasta a{m}) ──")
     ar = []
     for i in range(1, m + 1):
         a = leer_numero(f"  Ingrese a{i}: ")
         ar.append(a)
 
-    # ── 3. Leer condiciones iniciales C0, C1, ..., Cm-1 ─────
+    # Leer condiciones iniciales C0, C1, ..., Cm-1
     print(f"\n── Condiciones iniciales (f(0) hasta f({m-1})) ──")
     cr = []
     for i in range(m):
         c = leer_numero(f"  Ingrese C{i} = f({i}): ")
         cr.append(c)
 
-    # ── 4. Leer n ────────────────────────────────────────────
+    # Leer n 
     while True:
         n_val = leer_entero("\nIngrese el valor de n para evaluar f(n): ")
         if n_val >= 0:
             break
         print("n debe ser un entero no negativo.")
 
-    # ── 5. Caso trivial: n es condición inicial ───────────────
+    # Caso trivial: n es condición inicial
     if n_val < m:
         print(f"\n  f({n_val}) = {cr[n_val]}  (es una condición inicial directa)")
         return
 
-    # ── 6. Construir polinomio característico ────────────────
+    # Construir polinomio característico
     # r^m - a1*r^(m-1) - a2*r^(m-2) - ... - am = 0
     # coeficientes: [1, -a1, -a2, ..., -am]
     coefs_poly = [1] + [-a for a in ar]
 
-    # ── 7. Calcular raíces con multiplicidad ─────────────────
+    # Calcular raíces con multiplicidad
     try:
         raices_mult = obtener_raices_con_multiplicidad(coefs_poly)
     except Exception as e:
@@ -247,12 +247,12 @@ def main():
         else:
             print(f"  r = {re} + {im}i  (multiplicidad {mult})")
 
-    # ── 8. Plantear y resolver sistema lineal A·α = C ────────
+    # Plantear y resolver sistema lineal
     A = construir_sistema(raices_mult, m)
     b = np.array(cr, dtype=complex)
 
     try:
-        # Verificar que A no es singular (det ≈ 0)
+        # Verificar que A no es singular
         det = np.linalg.det(A)
         if abs(det) < 1e-12:
             raise np.linalg.LinAlgError("La matriz del sistema es singular (det ≈ 0).")
@@ -262,11 +262,11 @@ def main():
         print("  Verifique que las condiciones iniciales sean consistentes.")
         return
 
-    # ── 9. Mostrar expresión cerrada ─────────────────────────
+    # Mostrar expresión cerrada
     print("\n── Expresión cerrada ──")
     imprimir_expresion_cerrada(raices_mult, coefs_solucion)
 
-    # ── 10. Evaluar f(n) ─────────────────────────────────────
+    # Evaluar f(n)
     resultado = evaluar_fn(raices_mult, coefs_solucion, n_val)
 
     # Verificación cruzada iterativa
