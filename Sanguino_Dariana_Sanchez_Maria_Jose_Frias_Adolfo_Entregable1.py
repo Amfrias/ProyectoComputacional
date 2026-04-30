@@ -7,14 +7,6 @@ con condiciones iniciales f(0)=C0, f(1)=C1, ..., f(m-1)=Cm-1,
 este programa encuentra la expresión cerrada (no recurrente) para f(n)
 y la evalúa en un punto n dado por el usuario.
 
-Método:
-    1. Se construye el polinomio característico: r^m - a1*r^(m-1) - ... - am = 0
-    2. Se encuentran las raíces (con multiplicidades).
-    3. Se plantea la solución general como combinación lineal de términos r^n
-       (o n^k * r^n para raíces repetidas).
-    4. Se resuelve el sistema lineal con las condiciones iniciales.
-    5. Se imprime la expresión cerrada y se evalúa f(n).
-
 Dependencias:
     - numpy  (raíces del polinomio y sistema lineal)
     - sympy  (manipulación simbólica para expresión cerrada)
