@@ -6,8 +6,8 @@ Solución cerrada de recurrencias lineales homogéneas de coeficientes constante
 
 1. Clona el repositorio:
 ```bash
-   git clone <url-del-repo>
-   cd <nombre-del-repo>
+   git clone <https://github.com/Amfrias/ProyectoComputacional.git>
+   cd <ProyectoComputacional>
 ```
 
 2. Instala las dependencias:
@@ -18,7 +18,7 @@ Solución cerrada de recurrencias lineales homogéneas de coeficientes constante
 ## Uso
 
 ```bash
-python main.py
+Sanguino_Dariana_Sanchez_Maria_Jose_Frias_Adolfo_Entregable1.py
 ```
 
 Sigue las instrucciones en pantalla para ingresar:
