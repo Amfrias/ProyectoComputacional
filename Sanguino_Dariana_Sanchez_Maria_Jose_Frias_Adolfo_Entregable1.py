@@ -683,11 +683,11 @@ class App(tk.Tk):
         # ── Indicador final ──
         if res["coinciden"]:
             self.lbl_coincide.config(
-                text=f"✓  f({n_val}) = {vc}  — ambos métodos coinciden",
+                text=f"f({n_val}) = {vc}  — ambos métodos coinciden",
                 fg=SUCCESS)
         else:
             self.lbl_coincide.config(
-                text=f"⚠  posible error numérico  |  cerrada: {vc}  iter: {vi}",
+                text=f"posible error numérico  |  cerrada: {vc}  iter: {vi}",
                 fg=ERROR)
 
 
