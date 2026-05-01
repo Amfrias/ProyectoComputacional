@@ -14,7 +14,7 @@ Dependencias:
 
 import numpy as np
 import sympy as sp
-
+import streamlit as st
 
 # ─────────────────────────────────────────────────────────────
 # FUNCIONES AUXILIARES
@@ -182,100 +182,126 @@ def evaluar_fn(raices_mult, coefs_solucion, n_val):
 # ─────────────────────────────────────────────────────────────
 
 def main():
-    print("  SOLUCIÓN CERRADA DE RECURRENCIA LINEAL HOMOGÉNEA")
-    print("  f(n) = a1·f(n-1) + a2·f(n-2) + ... + am·f(n-m)")
-
-    # Leer m 
-    while True:
-        m = leer_entero("\nIngrese el grado m de la recurrencia: ")
-        if m >= 1:
-            break
-        print("m debe ser un entero positivo >= 1.")
-
-    # Leer coeficientes a1, a2, ..., am
-    print(f"\n── Coeficientes de la recurrencia (a1 hasta a{m}) ──")
+    st.title("Solución Cerrada de Recurrencia Lineal")
+    st.markdown("### f(n) = a₁·f(n-1) + a₂·f(n-2) + ... + aₘ·f(n-m)")
+    st.divider()
+ 
+    # ── Leer m ──────────────────────────────────────────────
+    m = st.number_input("Grado m de la recurrencia:", min_value=1, step=1, value=2)
+ 
+    st.divider()
+ 
+    # ── Leer coeficientes ────────────────────────────────────
+    st.subheader("Coeficientes aᵢ")
     ar = []
-    for i in range(1, m + 1):
-        a = leer_numero(f"  Ingrese a{i}: ")
-        ar.append(a)
-
-    # Leer condiciones iniciales C0, C1, ..., Cm-1
-    print(f"\n── Condiciones iniciales (f(0) hasta f({m-1})) ──")
-    cr = []
+    cols = st.columns(m)
     for i in range(m):
-        c = leer_numero(f"  Ingrese C{i} = f({i}): ")
-        cr.append(c)
-
-    # Leer n 
-    while True:
-        n_val = leer_entero("\nIngrese el valor de n para evaluar f(n): ")
-        if n_val >= 0:
-            break
-        print("n debe ser un entero no negativo.")
-
-    # Caso trivial: n es condición inicial
-    if n_val < m:
-        print(f"\n  f({n_val}) = {cr[n_val]}  (es una condición inicial directa)")
-        return
-
-    # Construir polinomio característico
-    # r^m - a1*r^(m-1) - a2*r^(m-2) - ... - am = 0
-    # coeficientes: [1, -a1, -a2, ..., -am]
-    coefs_poly = [1] + [-a for a in ar]
-
-    # Calcular raíces con multiplicidad
-    try:
-        raices_mult = obtener_raices_con_multiplicidad(coefs_poly)
-    except Exception as e:
-        print(f"\nError al calcular raíces: {e}")
-        return
-
-    print("\n── Raíces del polinomio característico ──")
-    for (r, mult) in raices_mult:
-        re = round(r.real, 6)
-        im = round(r.imag, 6)
-        if abs(im) < 1e-9:
-            print(f"  r = {re}  (multiplicidad {mult})")
+        with cols[i]:
+            a = st.number_input(f"a{i+1}", value=1.0, key=f"a{i}")
+            ar.append(a)
+ 
+    st.divider()
+ 
+    # ── Leer condiciones iniciales ───────────────────────────
+    st.subheader("Condiciones iniciales Cᵢ")
+    cr = []
+    cols2 = st.columns(m)
+    for i in range(m):
+        with cols2[i]:
+            c = st.number_input(f"C{i} = f({i})", value=float(i), key=f"c{i}")
+            cr.append(c)
+ 
+    st.divider()
+ 
+    # ── Leer n ───────────────────────────────────────────────
+    n_val = st.number_input("Valor de n a evaluar:", min_value=0, step=1, value=10)
+ 
+    # ── Botón calcular ───────────────────────────────────────
+    if st.button("Calcular", type="primary"):
+ 
+        # Caso trivial
+        if n_val < m:
+            st.success(f"f({n_val}) = {cr[int(n_val)]}  (es una condición inicial directa)")
+            return
+ 
+        # Polinomio característico
+        coefs_poly = [1] + [-a for a in ar]
+ 
+        # Raíces
+        try:
+            raices_mult = obtener_raices_con_multiplicidad(coefs_poly)
+        except Exception as e:
+            st.error(f"Error al calcular raíces: {e}")
+            return
+ 
+        # Mostrar raíces
+        st.subheader("Raíces del polinomio característico")
+        for (r, mult) in raices_mult:
+            re = round(r.real, 6)
+            im = round(r.imag, 6)
+            if abs(im) < 1e-9:
+                st.write(f"r = {re}  (multiplicidad {mult})")
+            else:
+                st.write(f"r = {re} + {im}i  (multiplicidad {mult})")
+ 
+        # Sistema lineal
+        A = construir_sistema(raices_mult, m)
+        b = np.array(cr, dtype=complex)
+ 
+        try:
+            det = np.linalg.det(A)
+            if abs(det) < 1e-12:
+                raise np.linalg.LinAlgError("La matriz del sistema es singular (det ≈ 0).")
+            coefs_solucion = np.linalg.solve(A, b)
+        except np.linalg.LinAlgError as e:
+            st.error(f"Error al resolver el sistema lineal: {e}")
+            st.warning("Verifique que las condiciones iniciales sean consistentes.")
+            return
+ 
+        # Expresión cerrada
+        st.subheader("Expresión cerrada")
+        idx = 0
+        terminos = []
+        for (r, mult) in raices_mult:
+            for k in range(mult):
+                alpha = coefs_solucion[idx]
+                re_a = round(alpha.real, 8)
+                im_a = round(alpha.imag, 8)
+                alpha_limpio = complex(re_a, im_a)
+                if abs(alpha_limpio) > 1e-9:
+                    coef_str = f"({alpha_limpio:.6g})"
+                    base_str = f"({r:.6g})^n"
+                    poly_str = "" if k == 0 else ("n · " if k == 1 else f"n^{k} · ")
+                    terminos.append(f"{coef_str} · {poly_str}{base_str}")
+                idx += 1
+ 
+        if terminos:
+            st.latex("f(n) = " + " + ".join(terminos))
         else:
-            print(f"  r = {re} + {im}i  (multiplicidad {mult})")
+            st.latex("f(n) = 0")
+ 
+        # Resultados
+        resultado = evaluar_fn(raices_mult, coefs_solucion, int(n_val))
+ 
+        f_iter = list(cr)
+        for step in range(m, int(n_val) + 1):
+            fn_paso = sum(ar[i] * f_iter[-(i + 1)] for i in range(m))
+            f_iter.append(fn_paso)
+        resultado_iter = round(f_iter[int(n_val)], 6)
+ 
+        st.divider()
+        st.subheader("Resultado")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label=f"f({int(n_val)}) — Expresión cerrada", value=resultado)
+        with col2:
+            st.metric(label=f"f({int(n_val)}) — Verificación iterativa", value=resultado_iter)
+ 
+        if abs(resultado - resultado_iter) < 1e-3:
+            st.success("Ambos métodos coinciden.")
+        else:
+            st.warning("Posible error numérico — los métodos difieren.")
 
-    # Plantear y resolver sistema lineal
-    A = construir_sistema(raices_mult, m)
-    b = np.array(cr, dtype=complex)
-
-    try:
-        # Verificar que A no es singular
-        det = np.linalg.det(A)
-        if abs(det) < 1e-12:
-            raise np.linalg.LinAlgError("La matriz del sistema es singular (det ≈ 0).")
-        coefs_solucion = np.linalg.solve(A, b)
-    except np.linalg.LinAlgError as e:
-        print(f"\nError al resolver el sistema lineal: {e}")
-        print("  Verifique que las condiciones iniciales sean consistentes.")
-        return
-
-    # Mostrar expresión cerrada
-    print("\n── Expresión cerrada ──")
-    imprimir_expresion_cerrada(raices_mult, coefs_solucion)
-
-    # Evaluar f(n)
-    resultado = evaluar_fn(raices_mult, coefs_solucion, n_val)
-
-    # Verificación cruzada iterativa
-    f_iter = list(cr)
-    for step in range(m, n_val + 1):
-        fn_paso = sum(ar[i] * f_iter[-(i + 1)] for i in range(m))
-        f_iter.append(fn_paso)
-    resultado_iter = round(f_iter[n_val], 6)
-
-    print(f"\n── Resultado ──")
-    print(f"  f({n_val}) = {resultado}  (expresión cerrada)")
-    print(f"  f({n_val}) = {resultado_iter}  (verificación iterativa)")
-
-    if abs(resultado - resultado_iter) < 1e-3:
-        print("Ambos métodos coinciden.")
-    else:
-        print("posible error numérico.")
 
 
 # ─────────────────────────────────────────────────────────────
