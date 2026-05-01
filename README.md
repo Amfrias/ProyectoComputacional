@@ -15,8 +15,6 @@ pip install -r requirements.txt
 ```
 
 ## Uso
-
-### Opción 1: Interfaz gráfica (recomendado)
 ```bash
 python -m streamlit run Sanguino_Dariana_Sanchez_Maria_Jose_Frias_Adolfo_Entregable1.py
 ```
