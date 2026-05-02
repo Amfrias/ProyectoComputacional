@@ -15,7 +15,9 @@ Dependencias:
 import numpy as np
 import sympy as sp
 import streamlit as st
-
+import subprocess
+import sys
+import os
 # ─────────────────────────────────────────────────────────────
 # FUNCIONES AUXILIARES
 # ─────────────────────────────────────────────────────────────
@@ -310,6 +312,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        print("\n  use python -m streamlit run Sanguino_Dariana_Sanchez_Maria_Jose_Frias_Adolfo_Entregable1.py")
     except KeyboardInterrupt:
         print("\n\n  Programa interrumpido por el usuario.")
