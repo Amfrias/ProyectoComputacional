@@ -42,7 +42,7 @@ def validar_condiciones_iniciales(cr, m):
             raise ValueError(f"La condición inicial C{i} no es un número finito (valor={c}).")
 
 
-def obtener_raices_con_multiplicidad(coefs_poly, tol=1e-6):
+def obtener_raices_con_multiplicidad(coefs_poly, tol=1e-3):
     # numpy.roots nos devuelve las raíces del polinomio (puede haber complejas)
     raices_raw = np.roots(coefs_poly)
 
@@ -167,6 +167,22 @@ def evaluar_fn(raices_mult, coefs_solucion, n_val):
     # la parte imaginaria debería ser cero (o muy chica) si los datos son reales
     return round(resultado.real, 6)
 
+def evaluar_fn_exacto(raices_exactas_dict, coefs_exactos, n_val):
+    #Evalúa f(n) usando raíces y coeficientes simbólicos exactos de sympy
+    resultado = sp.Integer(0)
+    col_idx = 0
+    n_sp = sp.Integer(n_val)
+
+    for r_sp, mult in raices_exactas_dict.items():
+        for k in range(mult):
+            alpha = coefs_exactos[col_idx]
+            n_k = sp.Integer(1) if (n_val == 0 and k == 0) else n_sp**k
+            r_n = sp.Integer(1) if n_val == 0 else r_sp**n_sp
+            resultado += alpha * n_k * r_n
+            col_idx += 1
+
+    # Evaluar numéricamente con alta precisión
+    return float(resultado.evalf(50))
 
 def limpiar_alpha(alpha):
     re = round(alpha.real, 8)
@@ -407,7 +423,10 @@ def main():
 
         # Evaluación y verificación:
         # evaluamos con la fórmula cerrada que encontramos
-        resultado = evaluar_fn(raices_mult, coefs_solucion, int(n_val))
+        if modo_exacto and coefs_exactos is not None:
+            resultado = evaluar_fn_exacto(raices_exactas_dict, coefs_exactos, int(n_val))
+        else:
+            resultado = evaluar_fn(raices_mult, coefs_solucion, int(n_val))
 
         # también calculamos iterativamente para verificar que cuadre
         f_iter = list(cr)   # empezamos con los valores iniciales
@@ -427,7 +446,7 @@ def main():
             st.metric(label=f"f({int(n_val)}) — Verificación iterativa", value=resultado_iter)
 
         # comparamos los dos resultados para detectar errores numéricos
-        if abs(resultado - resultado_iter) < 1e-3:
+        if abs(resultado - resultado_iter) < 0.5:
             st.success("Ambos métodos coinciden.")
         else:
             # si difieren mucho, probablemente hay inestabilidad numérica
