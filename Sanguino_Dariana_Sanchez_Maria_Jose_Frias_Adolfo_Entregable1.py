@@ -182,7 +182,7 @@ def evaluar_fn_exacto(raices_exactas_dict, coefs_exactos, n_val):
             col_idx += 1
 
     # Evaluar numéricamente con alta precisión
-    return float(resultado.evalf(50))
+    return float(sp.re(resultado.evalf(50)))
 
 def limpiar_alpha(alpha):
     re = round(alpha.real, 8)
@@ -197,7 +197,7 @@ def formatear_termino_latex(alpha_val, r_val, k, es_primero):
     # convertimos a LaTeX usando sympy para que salga bonito (sqrt, fracciones, etc.)
     if isinstance(alpha_val, sp.Basic):
         alpha_latex = sp.latex(sp.simplify(alpha_val))
-        alpha_float = float(alpha_val.evalf())
+        alpha_float = float(sp.re(alpha_val.evalf()))
     else:
         # valor numérico: usamos nsimplify para intentar convertir 0.5 → 1/2, etc.
         alpha_float = float(alpha_val.real) if hasattr(alpha_val, 'real') else float(alpha_val)
