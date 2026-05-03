@@ -16,7 +16,9 @@ Dependencias:
 import numpy as np       # para calcular raíces del polinomio y resolver el sistema lineal
 import sympy as sp       # para manejar símbolos matemáticos en la expresión cerrada
 import streamlit as st   # para construir la interfaz gráfica web
-
+import sys
+from streamlit.web import cli
+from streamlit import runtime
 
 # AUX FUNC:
 
@@ -240,7 +242,7 @@ def main():
     for i in range(m):
         with cols[i]:
             # cada coeficiente va en su columna con etiqueta clara
-            a = st.number_input(f"a{i+1}", value=1.0, key=f"a{i}")
+            a = st.number_input(f"a{i+1}", value=1, key=f"a{i}")
             ar.append(a)
 
     st.divider()
@@ -252,7 +254,7 @@ def main():
     for i in range(m):
         with cols2[i]:
             # valor por defecto es i para que fibonacci (0,1) funcione sin tocar nada
-            c = st.number_input(f"C{i} = f({i})", value=float(i), key=f"c{i}")
+            c = st.number_input(f"C{i} = f({i})", value=int(i), key=f"c{i}")
             cr.append(c)
 
     st.divider()
@@ -432,7 +434,11 @@ def main():
             st.warning("Posible error numérico — los métodos difieren.")
 
 
-if __name__ == "__main__":
-    main()   # ejecutamos la función principal que contiene toda la lógica de Streamlit
-    # si alguien ejecuta el archivo directamente, le indicamos cómo correrlo bien
-    print("\n  use: python -m streamlit run Sanguino_Dariana_Sanchez_Maria_Jose_Frias_Adolfo_Entregable1.py")
+if __name__ == '__main__':
+    # Si Streamlit ya está corriendo, ejecuta la lógica del programa normalmente
+    if runtime.exists():
+        main()
+    else:
+        # Si no, se invoca a sí mismo a través de Streamlit
+        sys.argv = ["streamlit", "run", sys.argv[0]]
+        sys.exit(cli.main())
